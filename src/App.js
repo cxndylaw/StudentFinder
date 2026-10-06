@@ -25,6 +25,8 @@ function App() {
   const resultsPerPage = 20;
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
+  const [showToast, setShowToast] = useState(false);
+  
 
   // Handle CSV upload
   const handleFileUpload = (e) => {
@@ -94,7 +96,7 @@ function App() {
                 personalEmail: String(values[values.length - 1] || '').trim(),
                 yearAdmittedToCourse: String(values[24] || '').trim(),
                 sprdAdmittedToCourse: String(values[25] || '').trim(),
-                firstNations: String(values[10] || '').trim(),
+                firstNations: normalizeFirstNations(String(values[10] || '').trim()),
                 completedCredits: String(values[45] || '').trim(),
                 cwa: String(values[39] || '').trim()
               };
@@ -212,6 +214,16 @@ function App() {
     }
   };
 
+  // Helper function to normalize firstNations values
+  const normalizeFirstNations = (value) => {
+    if (!value) return '';
+    const lowerValue = value.toLowerCase();
+    if (lowerValue === 'not answered' || lowerValue === 'not entered') {
+      return 'Not Answered/Entered';
+    }
+    return value;
+  };
+
   // Export to CSV
   const handleExport = () => {
     if (results.length === 0) {
@@ -296,12 +308,19 @@ function App() {
     return sorted;
   };
 
+  const showCopyToast = () => {
+  setShowToast(true);
+  setTimeout(() => setShowToast(false), 2000);
+};
+
   return (
     <div className="App">
       <header className="header">
         <h1>Student Finder</h1>
         <p>Upload CSV, search, export</p>
       </header>
+
+      {showToast && <div className="toast">Copied to clipboard!</div>}
 
       <div className="container">
         {/* Upload Section */}
@@ -459,7 +478,7 @@ function App() {
 
             <div className="results-list">
               {getSortedResults().slice((currentPage - 1) * resultsPerPage, currentPage * resultsPerPage).map((student, idx) => (
-                <ResultCard key={idx} student={student} />
+                <ResultCard key={idx} student={student} onCopy={showCopyToast} />
               ))}
             </div>
 
@@ -491,15 +510,34 @@ function App() {
   );
 }
 
-function ResultCard({ student }) {
+function ResultCard({ student, onCopy }) {
   const [expanded, setExpanded] = useState(false);
+
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
+    onCopy();
+  };
+
+  const fullName = `${student.givenName} ${student.familyName}`;
 
   return (
     <div className="result-card">
       <div className="card-header" onClick={() => setExpanded(!expanded)}>
-        <div>
-          <strong>{student.givenName} {student.familyName}</strong>
-          <span className="card-id">ID: {student.stuId}</span>
+        <div className="header-content">
+          <div className="name-and-id">
+            <strong
+              className="student-name"
+              onClick={(e) => { e.stopPropagation(); handleCopy(fullName); }}
+            >
+              {fullName}
+            </strong>
+            <span
+              className="card-id"
+              onClick={(e) => { e.stopPropagation(); handleCopy(student.stuId); }}
+            >
+              ID: {student.stuId}
+            </span>
+          </div>
         </div>
         <div className="card-meta">
           <span className="badge">{student.faculty}</span>
@@ -509,30 +547,36 @@ function ResultCard({ student }) {
 
       {expanded && (
         <div className="card-details">
-          <Detail label="Email" value={student.curtinEmail || student.personalEmail} />
-          <Detail label="Gender" value={student.gender} />
-          <Detail label="Citizenship" value={student.citizenship} />
-          <Detail label="Address" value={student.address} />
-          <Detail label="Organization" value={student.org} />
-          <Detail label="Course" value={student.course} />
-          <Detail label="Major" value={student.major} />
-          <Detail label="Mobile" value={student.mobile} />
-          <Detail label="Home Phone" value={student.homePhone} />
-          <Detail label="Year Admitted" value={student.yearAdmittedToCourse} />
-          <Detail label="Semester" value={student.sprdAdmittedToCourse} />
-          <Detail label="Completed Credits" value={student.completedCredits} />
-          <Detail label="CWA" value={student.cwa} />
+          <Detail label="Email" value={student.curtinEmail || student.personalEmail} onCopy={handleCopy} />
+          <Detail label="Gender" value={student.gender} onCopy={handleCopy} />
+          <Detail label="Citizenship" value={student.citizenship} onCopy={handleCopy} />
+          <Detail label="Address" value={student.address} onCopy={handleCopy} />
+          <Detail label="Organization" value={student.org} onCopy={handleCopy} />
+          <Detail label="Course" value={student.course} onCopy={handleCopy} />
+          <Detail label="Major" value={student.major} onCopy={handleCopy} />
+          <Detail label="Mobile" value={student.mobile} onCopy={handleCopy} />
+          <Detail label="Home Phone" value={student.homePhone} onCopy={handleCopy} />
+          <Detail label="Year Admitted" value={student.yearAdmittedToCourse} onCopy={handleCopy} />
+          <Detail label="Semester" value={student.sprdAdmittedToCourse} onCopy={handleCopy} />
+          <Detail label="Completed Credits" value={student.completedCredits} onCopy={handleCopy} />
+          <Detail label="CWA" value={student.cwa} onCopy={handleCopy} />
         </div>
       )}
     </div>
   );
 }
 
-function Detail({ label, value }) {
+function Detail({ label, value, onCopy }) {
   return (
     <div className="detail">
       <span className="label">{label}:</span>
-      <span className="value">{value || '-'}</span>
+      {value ? (
+        <span className="value" onClick={() => onCopy(value)}>
+          {value}
+        </span>
+      ) : (
+        <span className="value">-</span>
+      )}
     </div>
   );
 }
