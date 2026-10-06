@@ -2,7 +2,7 @@
   "name": "student-finder-simple",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://yourdomain.com/student-finder",
+  "homepage": "https://studentfinder.cindy.dev",
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
