@@ -83,22 +83,23 @@ function App() {
                 stuId: String(values[0] || '').trim(),
                 givenName: String(values[3] || '').trim(),
                 familyName: String(values[4] || '').trim(),
+                preferredName: String(values[6] || '').trim(),
                 gender: String(values[7] || '').trim(),
                 citizenship: String(values[9] || '').trim(),
-                address: String(values[11] || '').trim(),
+                address: String(values[1] || '').trim(),
                 faculty: String(values[18] || '').trim(),
                 org: String(values[20] || '').trim(),
                 course: String(values[23] || '').trim(),
-                major: String(values[61] || '').trim(),
+                major: String(values[62] || '').trim(),
                 mobile: String(values[values.length - 3] || '').trim(),
                 homePhone: String(values[values.length - 4] || '').trim(),
                 curtinEmail: String(values[values.length - 2] || '').trim(),
                 personalEmail: String(values[values.length - 1] || '').trim(),
                 yearAdmittedToCourse: String(values[24] || '').trim(),
                 sprdAdmittedToCourse: String(values[25] || '').trim(),
-                firstNations: normalizeFirstNations(String(values[10] || '').trim()),
-                completedCredits: String(values[45] || '').trim(),
-                cwa: String(values[39] || '').trim()
+                firstNations: String(values[10] || '').trim(),
+                completedCredits: String(values[46] || '').trim(),
+                cwa: String(values[40] || '').trim()
               };
             } catch (err) {
               console.error('Error parsing row', idx, ':', err);
@@ -232,10 +233,10 @@ function App() {
     }
 
     try {
-      const headers = ['Student ID', 'Given Name', 'Family Name', 'Gender', 'Citizenship', 'Address', 'Faculty', 'Org', 'Course', 'Major', 'Mobile', 'Home Phone', 'Curtin Email', 'Personal Email', 'Year Admitted', 'Semester Admitted', 'First Nations', 'Completed Credits', 'CWA'];
+      const headers = ['Student ID', 'Given Name', 'Family Name', 'Preferred Name', 'Gender', 'Citizenship', 'Address', 'Faculty', 'Org', 'Course', 'Major', 'Mobile', 'Home Phone', 'Curtin Email', 'Personal Email', 'Year Admitted', 'Semester Admitted', 'First Nations', 'Completed Credits', 'CWA'];
 
       const rows = results.map(s => [
-        s.stuId, s.givenName, s.familyName, s.gender, s.citizenship, s.address,
+        s.stuId, s.givenName, s.familyName, s.preferredName, s.gender, s.citizenship, s.address,
         s.faculty, s.org, s.course, s.major, s.mobile, s.homePhone,
         s.curtinEmail, s.personalEmail, s.yearAdmittedToCourse, s.sprdAdmittedToCourse,
         s.firstNations, s.completedCredits, s.cwa
@@ -547,6 +548,7 @@ function ResultCard({ student, onCopy }) {
 
       {expanded && (
         <div className="card-details">
+          <Detail label="Preferred Name" value={student.preferredName} onCopy={handleCopy} />
           <Detail label="Email" value={student.curtinEmail || student.personalEmail} onCopy={handleCopy} />
           <Detail label="Gender" value={student.gender} onCopy={handleCopy} />
           <Detail label="Citizenship" value={student.citizenship} onCopy={handleCopy} />
