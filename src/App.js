@@ -346,7 +346,7 @@ function App() {
               disabled={loading}
             />
             <label htmlFor="file-input">
-              {loading ? 'Processing...' : 'Click to select CSV or drag & drop'}
+              {loading ? 'Processing...' : 'Click to select CSV'}
             </label>
             {loading && progress > 0 && (
               <div className="progress-bar">
