@@ -193,7 +193,7 @@ function App() {
             s.curtinEmail.toLowerCase() === searchValue.toLowerCase() ||
             s.personalEmail.toLowerCase() === searchValue.toLowerCase()
           );
-
+          break;
         case 'bulkId':
           const ids = searchValue.split(/\s+/).map(id => id.trim().toLowerCase()).filter(Boolean);
           found = students.filter(s => ids.includes(s.stuId.toLowerCase()));
