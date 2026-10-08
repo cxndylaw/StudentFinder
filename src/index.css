@@ -18,3 +18,22 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.export-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.export-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.export-checkbox input {
+  cursor: pointer;
+}

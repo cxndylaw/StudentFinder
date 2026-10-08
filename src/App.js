@@ -11,6 +11,7 @@ function App() {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [exportNoSort, setExportNoSort] = useState(false);
 
   const [filters, setFilters] = useState({
     faculty: '',
@@ -192,6 +193,10 @@ function App() {
             s.curtinEmail.toLowerCase() === searchValue.toLowerCase() ||
             s.personalEmail.toLowerCase() === searchValue.toLowerCase()
           );
+
+        case 'bulkId':
+          const ids = searchValue.split(/\s+/).map(id => id.trim().toLowerCase()).filter(Boolean);
+          found = students.filter(s => ids.includes(s.stuId.toLowerCase()));
           break;
         default:
           break;
@@ -234,6 +239,11 @@ function App() {
 
     try {
       const headers = ['Student ID', 'Given Name', 'Family Name', 'Preferred Name', 'Gender', 'Citizenship', 'Address', 'Faculty', 'Org', 'Course', 'Major', 'Mobile', 'Home Phone', 'Curtin Email', 'Personal Email', 'Year Admitted', 'Semester Admitted', 'First Nations', 'Completed Credits', 'CWA'];
+
+      let exportResults = exportNoSort ? results : [...results];
+      if (!exportNoSort) {
+        exportResults.sort((a, b) => a.familyName.localeCompare(b.familyName));
+      }
 
       const rows = results.map(s => [
         s.stuId, s.givenName, s.familyName, s.preferredName, s.gender, s.citizenship, s.address,
@@ -361,6 +371,7 @@ function App() {
             <div className="search-controls">
               <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
                 <option value="id">Search by ID</option>
+                <option value="bulkId">Bulk ID Lookup</option>
                 <option value="name">Search by Name</option>
                 <option value="email">Search by Email</option>
               </select>
@@ -369,8 +380,10 @@ function App() {
                 type="text"
                 placeholder={
                   searchType === 'id' ? 'e.g., 12345678' :
+                  searchType === 'bulkId' ? 'e.g., 12345678 87654321 11111111' :
                   searchType === 'name' ? 'e.g., John Smith' :
-                  'e.g., john@curtin.edu.au'
+                  searchType === 'email' ? 'e.g., john@curtin.edu.au' :
+                  'e.g., 1403'
                 }
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
@@ -444,9 +457,19 @@ function App() {
           <div className="section">
             <div className="results-header">
               <h2>Results ({results.length})</h2>
-              <button onClick={handleExport} className="btn-export">
-                Export CSV
-              </button>
+              <div className="export-controls">
+                <label className="export-checkbox">
+                  <input 
+                    type="checkbox" 
+                    checked={exportNoSort} 
+                    onChange={(e) => setExportNoSort(e.target.checked)}
+                  />
+                  Keep search order
+                </label>
+                <button onClick={handleExport} className="btn-export">
+                  Export CSV
+                </button>
+              </div>
             </div>
 
             <div style={{marginBottom: '20px', display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center'}}>
