@@ -98,7 +98,7 @@ function App() {
                 personalEmail: String(values[values.length - 1] || '').trim(),
                 yearAdmittedToCourse: String(values[24] || '').trim(),
                 sprdAdmittedToCourse: String(values[25] || '').trim(),
-                firstNations: String(values[10] || '').trim(),
+                firstNations: normalizeFirstNations(String(values[10] || '').trim()),
                 completedCredits: String(values[46] || '').trim(),
                 cwa: String(values[40] || '').trim()
               };
